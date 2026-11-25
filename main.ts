@@ -15,16 +15,21 @@ const ENTRY =
 
 const OUTPUT_PATH = "/output/entry.txt";
 
-// Guard the gate: one line, plain UTF-8 text, 1-200 characters, not only whitespace.
-if (ENTRY.length < 1 || ENTRY.length > 200) {
-  throw new Error(`entry is ${ENTRY.length} characters, must be 1-200`);
+// Validate the entry before writing: one line, plain UTF-8 text,
+// 1-200 characters, not only whitespace.
+function validateEntry(entry: string): void {
+  if (entry.length < 1 || entry.length > 200) {
+    throw new Error(`entry is ${entry.length} characters, must be 1-200`);
+  }
+  if (entry.trim().length === 0) {
+    throw new Error("entry must not be only whitespace");
+  }
+  if (entry.includes("\n") || entry.includes("\r")) {
+    throw new Error("entry must be a single line");
+  }
 }
-if (ENTRY.trim().length === 0) {
-  throw new Error("entry must not be only whitespace");
-}
-if (ENTRY.includes("\n") || ENTRY.includes("\r")) {
-  throw new Error("entry must be a single line");
-}
+
+validateEntry(ENTRY);
 
 mkdirSync("/output", { recursive: true });
 writeFileSync(OUTPUT_PATH, ENTRY, "utf8");
